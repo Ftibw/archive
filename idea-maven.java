@@ -1,4 +1,4 @@
-1.创建父项目
+﻿1.创建父项目
 1.1建立一个maven project作为父项目Parent(不要使用以及选择archetype)
 1.2删除父项目中的src文件夹，在pom.xml中配置打包方式<packaging>pom</packaging>
 
@@ -303,13 +303,13 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd
 
 <!--配置监听器ContextLoaderListener-->
 <listener>
-   <listener-class>xxx.xxx.ContextLoaderListener</listener-class>
+   <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 </listener>
 
 <!--配置springmvc的过滤器CharacterEncodingFilter-->
 <filter>
     <filter-name>encodingFilter</filter-name>
-    <filter-class>xxx.xxx.CharacterEncodingFilter</filter-class>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
 <init-param>
           <param-name>encoding</param-name>
           <param-value>UTF-8</param-value>
@@ -322,7 +322,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd
 <!--配置springmvc的核心控制器DispatchServlet-->
 <servlet>
 <servlet-name>springmvc</servlet-name>
-<servlet-class>xxx.xxx.DispatcherServlet</servlet-class>
+<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 <!-- 加载springmvc.xml -->
 <init-param>
   <param-name>contextConfigLocation</param-name>
