@@ -122,7 +122,12 @@ A看到instance为null,因而创建了一个新的ExpensiveObject实例,而创�
 我们将“先检查后执行”以及“读取-修改-写入”等操作统称为复合操作。
 为了确保线程安全性，上述复合操作必须以原子方式执行。
 
+/*
 一个无状态类中加入一个状态变量后的情况,最好使用线程安全对象替代状态变量
+
+Page 18/308
+程序清单2-4 使用AtomicLong类型的变量来统计已处理请求的数量
+*/
 @ThreadSafe
 public class CountingFactorizer implements Servlet{
 	private final AtomicLong count = new AtomicLong(0);
@@ -138,6 +143,41 @@ public class CountingFactorizer implements Servlet{
 用AtomicLong替代long类型的计数器，能够确保所有对计数器状态的访问操作都是原子的。
 由于CountingFactorizer的状态就是计数器的状态，并且计数器是线程安全的，因此CountingFactorizer也是线程安全的。
 
+/*
+分别使用AtomicReference类型变量保存一个数值以及一个数组引用,该数组存储了数值的所有因子
+并不能保证线程安全
+
+Page 33/308
+程序清单2-5 
+*/
+@NotThreadSafe
+public class UnsafeCachingFactorizer implements Servlet{
+	private final AtomicReference<BigInteger> lastNumber
+		= new AtomicReference<BigInteger>();
+	private final AtomicReference<BigInteger> lastFactors
+		= new AtomicReference<BigInteger>();
+		
+		public void service(ServletRequest req,ServletResponse resp){
+			BigInteger i = extractFromRequest(req);
+			if(i.equals(lastNumber.get()))
+				encodeIntoResponse(resp,lastFactors().get());
+			else{
+				BigInteger[] factors =factor[i];
+				lastNumber.set(i);
+				lastFactors.set(factors);
+				encodeIntoResponse(resp,factors);
+			}
+		}
+	
+}
+/*
+else中
+lastNumber.set(i);调用后
+lastFactors.set(factors);调用前
+可能有其他线程在
+if中
+执行lastFactors().get()获取到一个过期的值
+*/
 =====================================================================================================
 
 /*
