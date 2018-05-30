@@ -2,7 +2,7 @@
 
 `DispatcherServlet`覆写了`FrameworkServlet中的onRefresh`方法 
 
-```
+```java
 	/**
 	 * Initialize the strategy objects that this servlet uses.
 	 * <p>May be overridden in subclasses in order to initialize further strategy objects.
@@ -29,7 +29,7 @@
 
 ### 总结
 
-```
+```java
 各个Servlet的作用：
 1. HttpServletBean
 　　主要做一些初始化的工作，将web.xml中配置的参数设置到Servlet中。比如servlet标签的子标签init-param标签中配置的参数。

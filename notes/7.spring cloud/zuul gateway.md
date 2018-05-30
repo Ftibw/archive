@@ -55,12 +55,12 @@ URL规则：
 
 逻辑上：
 
-```
+```java
         String url = "http://localhost:9000/user/info"
         String mapping = "user";
         for (String serviceId : serviceIds) {
             if (mapping.equals(serviceId.replace("(?<path>.*)-service", "${path}")) {
-                String ret = restTemplate.getForObject(url.replace(project, serviceId), String.class);
+                String ret = restTemplate.getForObject(url.replace(mapping, serviceId), String.class);
                 break;
             }
         }
@@ -77,3 +77,96 @@ URL规则：
 3.验证子格式化后的子串非空，则返回该子串，否则返回`serviceId`
 
 最终返回的结果就是路由的mapping
+
+## 核心
+
+当接受到请求后获取映射路径，再通过`getRemainingPath`按条件过滤后获取剩余的映射路径，此时的映射mapping。（例如`http://localhost:9000/user/info`经过过滤后得到`/user/info`）
+
+```java
+	/**
+	 * Return the path within the web application for the given request.
+	 * <p>Detects include request URL if called within a RequestDispatcher include.
+	 * @param request current HTTP request
+	 * @return the path within the web application
+	 */
+	public String getPathWithinApplication(HttpServletRequest request) {
+		String contextPath = getContextPath(request);
+		String requestUri = getRequestUri(request);
+        //通过request.getRequestUri()获取URL("http://localhost:9000/user/info")中的"/user/info"部分
+        //通过request.getContextPath()获取结果为空字符串
+		String path = getRemainingPath(requestUri, contextPath, true);
+		if (path != null) {
+			// Normal case: URI contains context path.
+			return (StringUtils.hasText(path) ? path : "/");
+		}
+		else {
+			return requestUri;
+		}
+	}
+```
+
+```java
+/**
+ * Match the given "mapping" to the start of the "requestUri" and if there
+ * is a match return the extra part. This method is needed because the
+ * context path and the servlet path returned by the HttpServletRequest are
+ * stripped of semicolon content unlike the requesUri.
+ */
+private String getRemainingPath(String requestUri, String mapping, boolean ignoreCase) {
+   int index1 = 0;
+   int index2 = 0;
+    //比较项目内的资源路径/user/info，与项目名，这里项目名为空""
+   for (; (index1 < requestUri.length()) && (index2 < mapping.length()); index1++, index2++) {
+      char c1 = requestUri.charAt(index1);
+      char c2 = mapping.charAt(index2);
+      if (c1 == ';') {
+         index1 = requestUri.indexOf('/', index1);
+         if (index1 == -1) {
+            return null;
+         }
+         c1 = requestUri.charAt(index1);
+      }
+      if (c1 == c2 || (ignoreCase && (Character.toLowerCase(c1) == Character.toLowerCase(c2)))) {
+         continue;
+      }
+      return null;
+   }
+   if (index2 != mapping.length()) {
+      return null;
+   }
+   else if (index1 == requestUri.length()) {
+      return "";
+   }
+   else if (requestUri.charAt(index1) == ';') {
+      index1 = requestUri.indexOf('/', index1);
+   }
+   //经过层层判断走到了这里，结果执行了"/user/info".substring(0)...原值返回
+   return (index1 != -1 ? requestUri.substring(index1) : "");
+}
+```
+
+```java
+//mapRouteToService(serviceId)方法中实现了我们自定义的正则匹配
+//serviceId正则匹配后得到user，然后在前拼接/，在后拼接/**
+String key = "/" + mapRouteToService(serviceId) + "/**";
+......
+//映射后key="/user/**" serviceId=user-service
+routesMap.put(key, new ZuulRoute(key, serviceId)); 
+```
+
+经典枚举实例
+
+```java
+package com.netflix.zuul;
+
+public enum ExecutionStatus {
+
+    SUCCESS (1), SKIPPED(-1), DISABLED(-2), FAILED(-3);
+    
+    private int status;
+
+    ExecutionStatus(int status) {
+        this.status = status;
+    }
+}
+```
