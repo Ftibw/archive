@@ -12,9 +12,9 @@
     	即，当”全部用户被锁定于主目录“时（即chroot_local_user=YES），"例外"就是：不被锁定的用户是哪些；
     当"全部用户不被锁定于主目录"时（即chroot_local_user=NO），"例外"“就是：要被锁定的用户是哪些。
 
- ![](.\vsftp_chroot.jpg)
 
-让我们举个例子:
+
+让我们![](C:\Users\ftibw\Desktop\dev\ftibw_git\archive\ftp\vsftp_chroot.jpg)举个例子:
 
 假设有ftp1, ftp2两个ftp用户, 计划让ftp1用户锁定在主目录下，不允许切换到其他目录, 但是允许ftp2用户自由切换目录，则可以分如下两种方式实现：
 
