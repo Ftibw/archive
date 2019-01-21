@@ -1,0 +1,3 @@
+﻿sub-account=ftibw@whkm
+AccessKeyId=LTAIDcEV4czu59Rg
+AccessKeySecret=TRnxK1ODXPvB79vpvVA3ZzlnUy5CM4
