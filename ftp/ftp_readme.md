@@ -81,7 +81,7 @@ chroot_list_enable=NO
 ftp server入站1：21<---1026	(ftp server需要开放21端口入站)
 ftp server出站2：21--->1026	(ftp client需要开放1026端口入站)
 数据交互：
-ftp server出站3：20--->1027  (ftp client需要开放1027端口入站)
+ftp server出站3：20--->1027	(ftp client需要开放1027端口入站)
 ftp server入站4：20<---1027	(ftp server需要开放20端口入站)
 ```
 
@@ -94,8 +94,8 @@ ftp server入站4：20<---1027	(ftp server需要开放20端口入站)
 ftp server入站1：21<---1026	(ftp server需要开放21端口入站)
 ftp server出站2：21--->1026	(ftp client需要开放1026端口入站)
 数据交互：
-ftp server入站3：2024<---1027 (ftp server需要开放2024端口入站)
-ftp server出站4：2024--->1027 (ftp client需要开放1027端口入站)
+ftp server入站3：2024<---1027	(ftp server需要开放2024端口入站)
+ftp server出站4：2024--->1027	(ftp client需要开放1027端口入站)
 ```
 
 ![](./pic/passive_model.jpg)
@@ -111,3 +111,4 @@ ftp server出站4：2024--->1027 (ftp client需要开放1027端口入站)
 日志文件格式说明
 
 ![](./pic/ftp_log_format.jpg)
+
