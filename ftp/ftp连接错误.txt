@@ -1,4 +1,4 @@
-ssh登录ftp正常，
+﻿ssh登录ftp正常，
 远程telnet ip 21仅仅响应500OOPS，说明请求进入了ftp服务器内部
 本地telnet 127.0.0.1 21响应tcp_wrappers is set to YES but no tcp wrapper support compiled in
 FTPClient连接异常Timed out waiting for initial connect reply
