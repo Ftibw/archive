@@ -1,8 +1,13 @@
-sshµÇÂ¼ftpÕı³££¬
-Ô¶³Ìtelnet ip 21½ö½öÏìÓ¦500OOPS£¬ËµÃ÷ÇëÇó½øÈëÁËftp·şÎñÆ÷ÄÚ²¿
-±¾µØtelnet 127.0.0.1 21ÏìÓ¦tcp_wrappers is set to YES but no tcp wrapper support compiled in
-FTPClientÁ¬½ÓÒì³£Timed out waiting for initial connect reply
+sshç™»å½•ftpæ­£å¸¸ï¼Œ
+è¿œç¨‹telnet ip 21ä»…ä»…å“åº”500OOPSï¼Œè¯´æ˜è¯·æ±‚è¿›å…¥äº†ftpæœåŠ¡å™¨å†…éƒ¨
+æœ¬åœ°telnet 127.0.0.1 21å“åº”tcp_wrappers is set to YES but no tcp wrapper support compiled in
+FTPClientè¿æ¥å¼‚å¸¸Timed out waiting for initial connect reply
 
-ËµÃ÷ftpÈ±Ê§tcp_wrappersÏŞÖÆ·ÃÎÊIPµÄÏà¹ØÒÀÀµ
-ÒªÃ´°²×°ÒÀÀµ£¬ÒªÃ´ĞŞ¸Ävsftpd.confÖĞµÄtcp_wrappers²ÎÊı£¬
-Áîtcp_wrappers=NO
+è¯´æ˜ftpç¼ºå¤±tcp_wrappersé™åˆ¶è®¿é—®IPçš„ç›¸å…³ä¾èµ–
+è¦ä¹ˆå®‰è£…ä¾èµ–ï¼Œè¦ä¹ˆä¿®æ”¹vsftpd.confä¸­çš„tcp_wrapperså‚æ•°ï¼Œ
+ä»¤tcp_wrappers=NO
+
+tips:
+service vsftpd startå¯åŠ¨failedï¼Œ
+æ˜¯å› ä¸º21ç«¯å£è¢«å ç”¨ï¼Œ
+æ‰€ä»¥éœ€è¦service vsftpd restartå³å¯...
