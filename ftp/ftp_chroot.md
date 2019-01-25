@@ -1,3 +1,5 @@
+# 1.vsftpd chroot设置
+
     1.chroot_local_user：
     	是否将所有用户限制在主目录,YES为启用 NO禁用.
     	(该项默认值是NO,即在安装vsftpd后不做配置的话，ftp用户是可以向上切换到要目录之外的)
@@ -57,3 +59,50 @@ chroot_list_enable=NO
     关于chroot_local_user的设置，通常我们倾向于：全局禁止跳出主目录，使用chroot_list添加例外！即：使用Case 1的设置！
     
     匿名用户默认的root是/var/ftp
+
+
+
+# 2.ftp的主动被动模式图解
+
+1.防火墙，入站仅放行开放过的端口，而出站则不限制
+
+![](./pic/firewalld.jpg)
+
+`以下端口中除了21与20，其他均为大于1023的随机端口`
+2.主动模式
+
+```
+命令交互：
+ftp server入站1：21<---1026	(ftp server需要开放21端口入站)
+ftp server出站2：21--->1026	(ftp client需要开放1026端口入站)
+数据交互：
+ftp server出站3：20--->1027  (ftp client需要开放1027端口入站)
+ftp server入站4：20<---1027	(ftp server需要开放20端口入站)
+```
+
+![](./pic/active_mode.jpg)
+
+3.被动模式
+
+```
+命令交互：
+ftp server入站1：21<---1026	(ftp server需要开放21端口入站)
+ftp server出站2：21--->1026	(ftp client需要开放1026端口入站)
+数据交互：
+ftp server入站3：2024<---1027 (ftp server需要开放2024端口入站)
+ftp server出站4：2024--->1027 (ftp client需要开放1027端口入站)
+```
+
+![](./pic/passive_model.jpg)
+
+
+
+# 3.vsftpd日志详解
+
+日志文件默认路径`/var/log/xferlog`
+
+![1548407161806](./pic/log_content.jpg)
+
+日志文件格式说明
+
+![](./pic/ftp_log_format.jpg)
