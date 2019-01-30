@@ -1,0 +1,114 @@
+# 1.vsftpd chroot设置
+
+    1.chroot_local_user：
+    	是否将所有用户限制在主目录,YES为启用 NO禁用.
+    	(该项默认值是NO,即在安装vsftpd后不做配置的话，ftp用户是可以向上切换到要目录之外的)
+    2.chroot_list_enable：
+    	是否启动限制用户的名单 YES为启用  NO禁用(包括注释掉也为禁用)
+    3.chroot_list_file=/etc/vsftpd/chroot_list：
+    	是否限制在主目录下的用户名单，至于是限制名单还是排除名单，这取决于chroot_local_user的值。
+    	我们可以这样记忆：chroot_local_user总是一个全局性的设定，其为YES时，全部用户被锁定于主目录，
+    其为NO时，全部用户不被锁定于主目录。
+    	那么我们势必需要在全局设定下能做出一些“微调”，即，我们总是需要一种“例外机制".
+    	所以当chroot_list_enable=YES时，表示我们“需要例外”，而”例外“的含义总是有一个上下文的。
+    	即，当”全部用户被锁定于主目录“时（即chroot_local_user=YES），"例外"就是：不被锁定的用户是哪些；
+    当"全部用户不被锁定于主目录"时（即chroot_local_user=NO），"例外"“就是：要被锁定的用户是哪些。
+
+![](./pic/vsftp_chroot.jpg)
+
+让我们举个例子:
+假设有ftp1, ftp2两个ftp用户, 计划让ftp1用户锁定在主目录下，不允许切换到其他目录, 但是允许ftp2用户自由切换目录，则可以分如下两种方式实现：
+
+方式一:
+
+令：
+chroot_local_user=YES
+chroot_list_enable=YES
+/etc/vsftpd/chroot_list名单列表为:
+ftp2
+
+解释：chroot_local_user=YES将所有用户限定在主目录内，chroot_list_enable=YES表示要启用chroot_list_file, 因为chroot_local_user=YES，即全体用户都被“限定在主目录内”,所以总是作为“例外列表”的chroot_list_file这时列出的是那些“不会被限制在主目录下”的用户。
+
+方式二:
+
+令：
+chroot_local_user=NO
+chroot_list_enable=YES
+/etc/vsftpd/chroot_list名单列表为:
+ftp1
+
+解释：chroot_local_user=NO则所有用户不被限定在主目录内，chroot_list_enable=YES表示要启用chroot_list_file, 因为chroot_local_user=NO，即全体用户都“不被限定在主目录内”,所以总是作为“例外列表”的chroot_list_file这时列出的是那些“会被限制在主目录下”的用户。
+
+
+其他情况：
+
+
+对于chroot_local_user和chroot_list_enable的组合还有这样两种情况：
+
+
+chroot_local_user=YES
+chroot_list_enable=NO
+和
+chroot_local_user=NO
+chroot_list_enable=NO
+
+当chroot_list_enable=NO时，就不再启用chroot_list_file，此时就是单纯的把全部用户限定或不限定在主目录下了！
+
+补充：
+
+    关于chroot_local_user的设置，通常我们倾向于：全局禁止跳出主目录，使用chroot_list添加例外！即：使用Case 1的设置！
+    
+    匿名用户默认的root是/var/ftp
+
+
+
+# 2.ftp的主动被动模式图解
+
+1.防火墙，入站仅放行开放过的端口，而出站则不限制
+
+![](./pic/firewalld.jpg)
+
+`以下端口中除了21与20，其他均为大于1023的随机端口，`
+`如果ftp server和ftp client在同一个服务器中,通过公网IP交互`
+`则除了20与21端口外，要开放2~3个大于1023的随机端口，`
+`否则server或client就会因为入站规则而阻止访问`
+
+
+2.主动模式
+
+```
+命令交互：
+ftp server入站1：21<---1026	(ftp server需要开放21端口入站)
+ftp server出站2：21--->1026	(ftp client需要开放1026端口入站)
+数据交互：
+ftp server出站3：20--->1027	(ftp client需要开放1027端口入站)
+ftp server入站4：20<---1027	(ftp server需要开放20端口入站)
+```
+
+![](./pic/active_mode.jpg)
+
+3.被动模式
+
+```
+命令交互：
+ftp server入站1：21<---1026	(ftp server需要开放21端口入站)
+ftp server出站2：21--->1026	(ftp client需要开放1026端口入站)
+数据交互：
+ftp server入站3：2024<---1027	(ftp server需要开放2024端口入站)
+ftp server出站4：2024--->1027	(ftp client需要开放1027端口入站)
+```
+
+![](./pic/passive_model.jpg)
+
+
+
+# 3.vsftpd日志详解
+
+日志文件默认路径`/var/log/xferlog`
+
+![1548407161806](./pic/log_content.jpg)
+
+日志文件格式说明
+
+![](./pic/ftp_log_format.jpg)
+
