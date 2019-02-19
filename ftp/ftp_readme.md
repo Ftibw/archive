@@ -112,3 +112,38 @@ ftp server出站4：2024--->1027	(ftp client需要开放1027端口入站)
 
 ![](./pic/ftp_log_format.jpg)
 
+# 4.vsftpd无法创建目录，上传文件
+
+vsftpd不能显示文件，不能创建文件及文件夹 这是由于selinux的机制，有如下2中解决方案，可选其一。
+
+## 1.开启ftp有关selinux权限
+
+`#``getsebool -a|grep ftp`
+
+allow_ftpd_anon_write --> on 
+allow_ftpd_full_access --> on //创建文件及文件夹
+allow_ftpd_use_cifs --> off
+allow_ftpd_use_nfs --> off
+ftp_home_dir --> on //显示文件夹及文件
+ftpd_connect_db --> off
+ftpd_use_passive_mode --> off
+httpd_enable_ftp_server --> off
+tftp_anon_write --> on
+
+用如下命令把以上信息设为ON
+
+`#``setsebool allow_ftpd_full_access=1`
+
+## 2.关闭selinux
+
+临时关闭：
+`#` `getenforce`
+Enforcing
+`#` `setenforce 0`
+`#` `getenforce`
+Permissive
+
+永久关闭：
+`#` `vim /etc/sysconfig/selinux`
+`SELINUX=enforcing改为 SELINUX=disabled`
+`重启服务reboot`
