@@ -1,5 +1,0 @@
-#设置/var/ftp/pub/ftibw目录只能被其用户或组成员读写执行,其他情况只能执行,不能读写
-chmod 755 /var/ftp/pub/ftibw
-#设置/var/ftp/pub/ftibw目录属于ftp组,否则ftp无法写入(上传或创建目录)
-chown -R ftibw:ftp /var/ftp/pub/ftibw
-#ftibw目录创建于/var/ftp/pub(local_root)中,可以设置ftibw用户/sbin/nologin而不影响ftp的使用

@@ -1,5 +1,0 @@
-version:
-mysql-5.7.25-linux-glibc2.12-x86_64.tar.gz
-
-link:
-https://dev.mysql.com/downloads/mysql/5.7.html#downloads

@@ -1,3 +1,0 @@
-yum -y install ntpdate	#centos需要下载，redhat自带ntpdate
-ntpdate cn.pool.ntp.org
-TZ='Asia/Shanghai'; export TZ
