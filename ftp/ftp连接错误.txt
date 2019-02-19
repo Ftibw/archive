@@ -11,3 +11,20 @@ tips:
 service vsftpd start启动failed，
 是因为21端口被占用，
 所以需要service vsftpd restart即可...
+
+（一）连接ftp后立即显示，用户登录失败:
+当注释掉chroot_local_user的时候，也就是不限制用户切换到主目录之外就不出错了。找到具体的错误信息解决问题就很简单了，经查：
+这个问题发生在最新的这是由于下面的更新造成的：
+- Add stronger checks for the configuration error of running with a writeable root directory inside a chroot(). This may bite people who carelessly turned on chroot_local_user but such is life.
+从2.3.5之后，vsftpd增强了安全检查，如果用户被限定在了其主目录下，则该用户的主目录不能再具有写权限了！如果检查发现还有写权限，就会报该错误。
+ 要修复这个错误，
+1.你可以在vsftpd的配置文件中增加下列两项中的一项：
+allow_writeable_chroot=YES
+2.或者可以，用命令chmod a-w /var/ftp/pub/ftibw去除用户主目录的写权限，注意把目录(/var/ftp/pub/ftibw)替换成你自己的ftp用户主目录。
+在配置文件中加上上面的配置项之后，无论是xftp还是原生ftp客户端，均可以正常访问了。
+
+（二）xftp被动模式登录阿里云ECS的ftp，总是无法显示文件夹。
+1.java代码使用被动模式上传下载失败，检查阿里云安全组是否开放了ftp数据端口范围(例如50000/60000)，检查vsftp.conf中是否设置了被动模式端口范围:
+pasv_min_port=50000
+pasv_max_port=60000
+2.java代码使用被动模式上传下载均正常，但用xftp被动模式登录阿里云ECS的ftp总是无法显示文件夹，这是xftp连接工具的一个大bug，xftp改为主动模式登录即可。
