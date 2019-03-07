@@ -1,0 +1,16 @@
+生产环境配置文件application-pro.yml：
+logging.path: /project/logs
+
+==================================
+
+在logback-spring.xml中配置引用如下：
+
+<property name="log.path" value="${path.log}"/>
+但是很遗憾这样并读不到我们配置的值，这时候我们需要通过springProperty标签来引用，例入我的：
+
+<springProperty scope="context" name="LOG_HOME" source="logging.path"/>
+这里的name和上面property标签一样不多说，source其实就是上面yml中的value啦，只不过要注意：千万不要加${}
+
+如果还是读取不到，请把你的logback.xml配置文件名，改为：logback-spring.xml就可以啦
+
+至于为什么要这么做，就是因为logback.xml的加载顺序早于springboot的application.yml配置文件当然读不到application.yml文件中的值了。

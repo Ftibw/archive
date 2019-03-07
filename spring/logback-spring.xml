@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <!--logging.path: ${work-dir}/logs-->
+    <!--docker容器中的该目录被挂载到了宿主的指定卷目录中,并且springboot的jar共享了前端用的tomcat的apps的挂载卷-->
+    <!--引用yml文件中配置的任意环境变量-->
+    <springProperty scope="context" name="LOG_HOME" source="logging.path"/>
+    <!--日志文件名-->
+    <property name="FILE_NAME" value="harbor"/>
+    <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
+    <property name="CUSTOM_LOG_PATTERN" value="[%d{yyyyMMdd HH:mm:ss} %-5level %logger{50}] [%msg]%n"/>
+    <!-- 控制台输出 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${CUSTOM_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+    <!-- 设置分割 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 设置按maxFileSize分割日志,但是分割时按日期命名新文件,设置日志保留时长,只保留maxHistory时间内的日志 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- rollover daily/-->
+            <fileNamePattern>${LOG_HOME}/${FILE_NAME}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- each file should be at most 10MB, keep 30 days worth of history,
+                but at most 3GB -->
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${CUSTOM_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+    <!--DAO层debug级别记录SQL-->
+    <!--<logger name="com.whxm.harbor.mapper" level="DEBUG"/>-->
+    <!-- 日志输出级别 -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>
+
