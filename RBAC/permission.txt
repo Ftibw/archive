@@ -1,0 +1,19 @@
+1.结构
+id		pid		auth_code			available		system_code
+序列增长		父级结点id	父级结点下的子结点从1开始的编号	可用1|不可用0	自定义的权限英文专有短名词(权限概述)
+
+auth_id	int		权限ID
+parent_id	int		父id，顶级类父id为0	
+auth_code		模块代码
+auth_note	varchar		权限描述
+available	int		是否可用，1可用0不可用
+system_code		权限在系统中的代码，用于权限的实际控制	
+
+2.例子
+id		pid		auth_code			available		system_code
+1		0		1				1		空字符串
+2		0		2				1		MENU_TemplateManager
+3		0		3				1		null
+101		1		11(1结点下的第1个项)		1		MENU_StreamManager
+102		1		12(1结点下的第2个项)		1		空字符串
+103		2		21(2结点下的第1个项)		1		MENU_TaskManager
