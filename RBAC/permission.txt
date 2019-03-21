@@ -8,12 +8,14 @@ auth_code		模块代码
 auth_note	varchar		权限描述
 available	int		是否可用，1可用0不可用
 system_code		权限在系统中的代码，用于权限的实际控制	
+resource			权限对应的资源，通常是URI
+is_leaf			是否是权限树的叶子结点
 
 2.例子
-id		pid		auth_code			available		system_code
-1		0		1				1		空字符串
-2		0		2				1		MENU_TemplateManager
-3		0		3				1		null
-101		1		11(1结点下的第1个项)		1		MENU_StreamManager
-102		1		12(1结点下的第2个项)		1		空字符串
-103		2		21(2结点下的第1个项)		1		MENU_TaskManager
+id		pid		auth_code			available		system_code			resource			is_leaf
+1		0		1				1		空字符串				/shop			0
+2		0		2				1		MENU_TemplateManager		/system			0	
+3		0		3				1		null				/terminal			0
+101		1		11(1结点下的第1个项)		1		MENU_StreamManager		/shop/picture		1
+102		1		12(1结点下的第2个项)		1		空字符串				/shop/book		1
+103		2		21(2结点下的第1个项)		1		MENU_TaskManager		/system/account		1
