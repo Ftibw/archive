@@ -1,10 +1,10 @@
 # 一、 JDK key-tool生成证书
 
-`测试服务器IP：192.168.1.126
-证书相关文件根目录：C:/Users/ftibw/Desktop/ssl/
-key的alias：dmbd4
-storepass：123456
-nginx的https端口映射的静态资源目录：D: /static`
+测试服务器IP：`192.168.1.126`
+证书相关文件根目录：`C:/Users/ftibw/Desktop/ssl/`
+key的alias：`dmbd4`
+storepass：`123456`
+nginx的https端口映射的静态资源目录：`D: /static`
 
 ##  1.生成RSA类型密钥对keystore
 
@@ -12,7 +12,7 @@ nginx的https端口映射的静态资源目录：D: /static`
  keytool -genkey -alias dmbd4 -keypass 123456 -keyalg RSA -keysize 2048 -validity 3650 -keystore C:/Users/ftibw/Desktop/ssl/server.keystore -storepass 123456 -ext SAN=ip:192.168.1.126
 ```
 
-   keytool -genkey -alias dmbd4 -keypass   123456 -keyalg RSA -keysize 2048 -validity 3650 -keystore   C:/Users/ftibw/Desktop/ssl/server.keystore -storepass 123456 -ext   SAN=ip:192.168.1.126   
+
 
 ## 2.转换为pkcs12类型keystore
 
@@ -20,7 +20,7 @@ nginx的https端口映射的静态资源目录：D: /static`
 keytool -importkeystore -srckeystore C:/Users/ftibw/Desktop/ssl/keystore.keystore -destkeystore C:/Users/ftibw/Desktop/ssl/server.keystore -deststoretype pkcs12 
 ```
 
-   keytool -importkeystore -srckeystore   C:/Users/ftibw/Desktop/ssl/keystore.keystore -destkeystore   C:/Users/ftibw/Desktop/ssl/server.keystore -deststoretype pkcs12   
+
 
 ## 3.将keystore导出为证书文件(server.cer)
 
@@ -36,7 +36,6 @@ keytool -export -alias dmbd4 -storepass 123456 -file C:/Users/ftibw/Desktop/ssl/
 
 1. ## server.cer文件转server.pem文件
 
-   x509 -inform der -in C:/Users/ftibw/Desktop/ssl/server.cer   -out C:/Users/ftibw/Desktop/ssl/server.pem   
 
 ```
 x509 -inform der -in C:/Users/ftibw/Desktop/ssl/server.cer -out C:/Users/ftibw/Desktop/ssl/server.pem 
@@ -56,10 +55,8 @@ x509 -inform DER -in C:/Users/ftibw/Desktop/ssl/server.cer -out C:/Users/ftibw/D
 `1.2.若.cer文件格式已经是.pem文件格式，就直接执行下面命令进行转换，否则先将.cer文件转换为.pem文件格式再转换成.crt文件，显然jdk生成的.cer文件需要先转换为.pem文件`
 
 ```
-x509 -inform PEM -in C:/Users/ftibw/Desktop/ssl/server.pem -out C:/Users/ftibw/Desktop/ssl/server_pem.crt
+x509 -inform PEM -in C:/Users/ftibw/Desktop/ssl/server.pem -out C:/Users/ftibw/Desktop/ssl/server_pem.crt 
 ```
-
-   x509 -inform PEM -in   C:/Users/ftibw/Desktop/ssl/server.pem -out C:/Users/ftibw/Desktop/ssl/server_pem.crt   
 
 `1.3.   
 可以用上述2种方式生成的.crt文件相互验证，
@@ -68,8 +65,6 @@ x509 -inform PEM -in C:/Users/ftibw/Desktop/ssl/server.pem -out C:/Users/ftibw/D
 ```
 verify -CAfile C:/Users/ftibw/Desktop/ssl/ server_cer.crt C:/Users/ftibw/Desktop/ssl/ 
 ```
-
-   verify -CAfile   C:/Users/ftibw/Desktop/ssl/ server_cer.crt   C:/Users/ftibw/Desktop/ssl/ server_pem.crt   C:/Users/ftibw/Desktop/ssl/server_pem.crt:   OK   
 
  `响应：server_pem.crt C:/Users/ftibw/Desktop/ssl/server_pem.crt: OK`
 
@@ -162,15 +157,15 @@ public class ConvertPFXToKeystoreUtil {
 }
 ```
 
-   public class ConvertPFXToKeystoreUtil {             public static final String PKCS12 = "PKCS12";         public static final String JKS = "JKS";             public static final String PFX_KEYSTORE_FILE =   "C:\\Users\\ftibw\\Desktop\\ssl\\server.pfx";         public static final String KEYSTORE_PASSWORD = "123456";         public static final String JKS_KEYSTORE_FILE =   "C:\\Users\\ftibw\\Desktop\\ssl\\server.keystore";             /**          * 将pfx或p12的文件转为keystore          */         public static void coverTokeyStore() {             try {               KeyStore inputKeyStore =   KeyStore.getInstance("PKCS12");               FileInputStream fis = new   FileInputStream(PFX_KEYSTORE_FILE);               char[] nPassword = null;               nPassword =   KEYSTORE_PASSWORD.toCharArray();               inputKeyStore.load(fis, nPassword);               fis.close();               KeyStore outputKeyStore =   KeyStore.getInstance("JKS");               outputKeyStore.load(null,   KEYSTORE_PASSWORD.toCharArray());               Enumeration enums =   inputKeyStore.aliases();               // we are readin just one               // certificate.               while (enums.hasMoreElements()) {                   String keyAlias = (String)   enums.nextElement();                     System.out.println("alias=[" + keyAlias + "]");                   if   (inputKeyStore.isKeyEntry(keyAlias)) {                       Key key =   inputKeyStore.getKey(keyAlias, nPassword);                       Certificate[] certChain =   inputKeyStore.getCertificateChain(keyAlias);                         outputKeyStore.setKeyEntry(keyAlias, key,   KEYSTORE_PASSWORD.toCharArray(), certChain);                   }               }               FileOutputStream out = new   FileOutputStream(JKS_KEYSTORE_FILE);               outputKeyStore.store(out,   nPassword);               out.close();             } catch (Exception e) {               e.printStackTrace();             }         }             /**          * 将keystore转为pfx          */         public static void coverToPfx() {             try {               KeyStore inputKeyStore =   KeyStore.getInstance("JKS");               FileInputStream fis = new   FileInputStream(JKS_KEYSTORE_FILE);               char[] nPassword = null;               nPassword =   KEYSTORE_PASSWORD.toCharArray();               inputKeyStore.load(fis,   nPassword);               fis.close();               KeyStore outputKeyStore =   KeyStore.getInstance("PKCS12");               outputKeyStore.load(null,   KEYSTORE_PASSWORD.toCharArray());               Enumeration enums =   inputKeyStore.aliases();               // we are readin just one               // certificate.               while (enums.hasMoreElements()) {                   String keyAlias = (String)   enums.nextElement();                     System.out.println("alias=[" + keyAlias + "]");                   if   (inputKeyStore.isKeyEntry(keyAlias)) {                       Key key = inputKeyStore.getKey(keyAlias,   nPassword);                       Certificate[] certChain =   inputKeyStore.getCertificateChain(keyAlias);                         outputKeyStore.setKeyEntry(keyAlias, key,   KEYSTORE_PASSWORD.toCharArray(), certChain);                   }               }               FileOutputStream out = new   FileOutputStream(PFX_KEYSTORE_FILE);               outputKeyStore.store(out,   nPassword);               out.close();             } catch (Exception e) {               e.printStackTrace();             }         }             public static void main(String[] args) {             coverToPfx();             //coverTokeyStore();         }   }   
 
-3. ## 使用server.pfx生成server.key文件
 
-   ```
-   pkcs12 -in C:/Users/ftibw/Desktop/ssl/server.pfx -nocerts -nodes -out C:/Users/ftibw/Desktop/ssl/server.key
-   ```
+## 3.使用server.pfx生成server.key文件
 
-   pkcs12 -in   C:/Users/ftibw/Desktop/ssl/server.pfx -nocerts -nodes -out C:/Users/ftibw/Desktop/ssl/server.key   
+```
+pkcs12 -in C:/Users/ftibw/Desktop/ssl/server.pfx -nocerts -nodes -out C:/Users/ftibw/Desktop/ssl/server.key
+```
+
+
 
 ## 4.配置nginx
 
@@ -210,4 +205,4 @@ cd /d "%~dp0"
 certutil -addstore -f root C:/Users/ftibw/Desktop/ssl/server.cer
 ```
 
-   @echo off   %1 mshta vbscript:CreateObject("Shell.Application").ShellExecute("cmd.exe","/c   %~s0 ::","","runas",1)(window.close)&&exit   cd /d "%~dp0"   certutil -addstore -f root C:/Users/ftibw/Desktop/ssl/server.cer   
+ 
