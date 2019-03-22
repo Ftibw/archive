@@ -1,15 +1,21 @@
 # 一、 JDK key-tool生成证书
 
 测试服务器IP：`192.168.1.126`
+
 证书相关文件根目录：`C:/Users/ftibw/Desktop/ssl/`
+
 key的alias：`dmbd4`
+
 storepass：`123456`
+
 nginx的https端口映射的静态资源目录：`D: /static`
+
+
 
 ##  1.生成RSA类型密钥对keystore
 
 ```
- keytool -genkey -alias dmbd4 -keypass 123456 -keyalg RSA -keysize 2048 -validity 3650 -keystore C:/Users/ftibw/Desktop/ssl/server.keystore -storepass 123456 -ext SAN=ip:192.168.1.126
+keytool -genkey -alias dmbd4 -keypass 123456 -keyalg RSA -keysize 2048 -validity 3650 -keystore C:/Users/ftibw/Desktop/ssl/server.keystore -storepass 123456 -ext SAN=ip:192.168.1.126
 ```
 
 
@@ -17,7 +23,7 @@ nginx的https端口映射的静态资源目录：`D: /static`
 ## 2.转换为pkcs12类型keystore
 
 ```
-keytool -importkeystore -srckeystore C:/Users/ftibw/Desktop/ssl/keystore.keystore -destkeystore C:/Users/ftibw/Desktop/ssl/server.keystore -deststoretype pkcs12 
+keytool -importkeystore -srckeystore C:/Users/ftibw/Desktop/ssl/keystore.keystore -destkeystore C:/Users/ftibw/Desktop/ssl/server.keystore -deststoretype pkcs12
 ```
 
 
@@ -38,32 +44,35 @@ keytool -export -alias dmbd4 -storepass 123456 -file C:/Users/ftibw/Desktop/ssl/
 
 
 ```
-x509 -inform der -in C:/Users/ftibw/Desktop/ssl/server.cer -out C:/Users/ftibw/Desktop/ssl/server.pem 
+x509 -inform der -in C:/Users/ftibw/Desktop/ssl/server.cer -out C:/Users/ftibw/Desktop/ssl/server.pem
 ```
 
-`附:
+附:
+
 openssl命令将cer格式转换crt
+
 CER是二进制形式的X.509证书，DER编码，jdk的keytool导出的.cer文件就是这种格式。
+
 CRT是二进制X.509证书，封装在文本（base-64）编码中。
+
 如下两种方式进行转换
-1.1.jdk的keytool导出的.cer文件`
+
+1.1.jdk的keytool导出的.cer文件
 
 ```
 x509 -inform DER -in C:/Users/ftibw/Desktop/ssl/server.cer -out C:/Users/ftibw/Desktop/ssl/server_cer.crt
 ```
 
-`1.2.若.cer文件格式已经是.pem文件格式，就直接执行下面命令进行转换，否则先将.cer文件转换为.pem文件格式再转换成.crt文件，显然jdk生成的.cer文件需要先转换为.pem文件`
+1.2.若.cer文件格式已经是.pem文件格式，就直接执行下面命令进行转换，否则先将.cer文件转换为.pem文件格式再转换成.crt文件，显然jdk生成的.cer文件需要先转换为.pem文件
 
 ```
-x509 -inform PEM -in C:/Users/ftibw/Desktop/ssl/server.pem -out C:/Users/ftibw/Desktop/ssl/server_pem.crt 
+x509 -inform PEM -in C:/Users/ftibw/Desktop/ssl/server.pem -out C:/Users/ftibw/Desktop/ssl/server_pem.crt
 ```
 
-`1.3.   
-可以用上述2种方式生成的.crt文件相互验证，
-第一个参数对应的.crt文件可验证第二个参数对应的.crt，反序后则情况相反。`
+1.3. 可以用上述2种方式生成的.crt文件相互验证，第一个参数对应的.crt文件可验证第二个参数对应的.crt，反序后则情况相反。
 
 ```
-verify -CAfile C:/Users/ftibw/Desktop/ssl/ server_cer.crt C:/Users/ftibw/Desktop/ssl/ 
+verify -CAfile C:/Users/ftibw/Desktop/ssl/ server_cer.crt C:/Users/ftibw/Desktop/ssl/
 ```
 
  `响应：server_pem.crt C:/Users/ftibw/Desktop/ssl/server_pem.crt: OK`
@@ -195,8 +204,9 @@ http{
 
 ## 5.将C:/Users/ftibw/Desktop/ssl/server.cer证书文件颁发给客户端
 
-`执行addcert.bat脚本，即可将证书导入到受信任的根证书颁发机构中。然后重启浏览器。
-addcert.bat脚本：`
+执行addcert.bat脚本，即可将证书导入到受信任的根证书颁发机构中。然后重启浏览器。
+
+addcert.bat脚本如下：
 
 ```
 @echo off
