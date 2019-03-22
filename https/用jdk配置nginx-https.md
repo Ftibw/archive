@@ -14,7 +14,7 @@ nginx的https端口映射的静态资源目录：`D: /static`
 
 ##  1.生成RSA类型密钥对keystore
 
-```
+```shell
 keytool -genkey -alias dmbd4 -keypass 123456 -keyalg RSA -keysize 2048 -validity 3650 -keystore C:/Users/ftibw/Desktop/ssl/server.keystore -storepass 123456 -ext SAN=ip:192.168.1.126
 ```
 
@@ -22,7 +22,7 @@ keytool -genkey -alias dmbd4 -keypass 123456 -keyalg RSA -keysize 2048 -validity
 
 ## 2.转换为pkcs12类型keystore
 
-```
+```shell
 keytool -importkeystore -srckeystore C:/Users/ftibw/Desktop/ssl/keystore.keystore -destkeystore C:/Users/ftibw/Desktop/ssl/server.keystore -deststoretype pkcs12
 ```
 
@@ -30,7 +30,7 @@ keytool -importkeystore -srckeystore C:/Users/ftibw/Desktop/ssl/keystore.keystor
 
 ## 3.将keystore导出为证书文件(server.cer)
 
-```
+```shell
 keytool -export -alias dmbd4 -storepass 123456 -file C:/Users/ftibw/Desktop/ssl/server.cer -keystore C:/Users/ftibw/Desktop/ssl/server.keystore
 ```
 
@@ -40,10 +40,10 @@ keytool -export -alias dmbd4 -storepass 123456 -file C:/Users/ftibw/Desktop/ssl/
 
 `使用openssl将jdk生成的证书转化为nginx配置文件中可以使用的证书类型`
 
-1. ## server.cer文件转server.pem文件
+## 1.server.cer文件转server.pem文件
 
 
-```
+```shell
 x509 -inform der -in C:/Users/ftibw/Desktop/ssl/server.cer -out C:/Users/ftibw/Desktop/ssl/server.pem
 ```
 
@@ -59,31 +59,37 @@ CRT是二进制X.509证书，封装在文本（base-64）编码中。
 
 1.1.jdk的keytool导出的.cer文件
 
-```
+```shell
 x509 -inform DER -in C:/Users/ftibw/Desktop/ssl/server.cer -out C:/Users/ftibw/Desktop/ssl/server_cer.crt
 ```
 
 1.2.若.cer文件格式已经是.pem文件格式，就直接执行下面命令进行转换，否则先将.cer文件转换为.pem文件格式再转换成.crt文件，显然jdk生成的.cer文件需要先转换为.pem文件
 
-```
+```shell
 x509 -inform PEM -in C:/Users/ftibw/Desktop/ssl/server.pem -out C:/Users/ftibw/Desktop/ssl/server_pem.crt
 ```
 
-1.3. 可以用上述2种方式生成的.crt文件相互验证，第一个参数对应的.crt文件可验证第二个参数对应的.crt，反序后则情况相反。
+可以用上述2种方式生成的.crt文件相互验证，如下：
 
+```shell
+verify -CAfile C:/Users/ftibw/Desktop/ssl/server_cer.crt C:/Users/ftibw/Desktop/ssl/server_pem.crt
 ```
-verify -CAfile C:/Users/ftibw/Desktop/ssl/ server_cer.crt C:/Users/ftibw/Desktop/ssl/
+
+ `响应：C:/Users/ftibw/Desktop/ssl/server_pem.crt: OK`
+
+```shell
+verify -CAfile C:/Users/ftibw/Desktop/ssl/server_pem.crt C:/Users/ftibw/Desktop/ssl/server_cer.crt
 ```
 
- `响应：server_pem.crt C:/Users/ftibw/Desktop/ssl/server_pem.crt: OK`
+`响应：C:/Users/ftibw/Desktop/ssl/server_cer.crt: OK`
 
 
 
-2. ## 使用java工具类，将server.keystore转为server.pfx
+## 2.使用java工具类，将server.keystore转为server.pfx
 
 `工具类如下：`
 
-```
+```java
 public class ConvertPFXToKeystoreUtil {
 
     public static final String PKCS12 = "PKCS12";
@@ -170,7 +176,7 @@ public class ConvertPFXToKeystoreUtil {
 
 ## 3.使用server.pfx生成server.key文件
 
-```
+```shell
 pkcs12 -in C:/Users/ftibw/Desktop/ssl/server.pfx -nocerts -nodes -out C:/Users/ftibw/Desktop/ssl/server.key
 ```
 
@@ -178,7 +184,7 @@ pkcs12 -in C:/Users/ftibw/Desktop/ssl/server.pfx -nocerts -nodes -out C:/Users/f
 
 ## 4.配置nginx
 
-```
+```nginx
 http{
 #其他配置省略
 	server {
@@ -208,7 +214,7 @@ http{
 
 addcert.bat脚本如下：
 
-```
+```shell
 @echo off
 %1 mshta vbscript:CreateObject("Shell.Application").ShellExecute("cmd.exe","/c %~s0 ::","","runas",1)(window.close)&&exit
 cd /d "%~dp0"
