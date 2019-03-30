@@ -1,6 +1,9 @@
 Typora快捷键：
 
-全文索引："["+"toc"+"]"+回车
+全文索引<table of content>："["+"toc"+"]"+回车
+
+标题：ctrl+数字
+表格：ctrl+t
 
 有序列表：数字+"."+空格
 无序列表："-"+空格
@@ -14,9 +17,6 @@ Typora快捷键：
 倾斜：ctrl+i
 下划线：ctrl+u
 删除线：alt+shift+5
-
-标题：ctrl+数字
-表格：ctrl+t
 
 插入图片：ctrl+shift+i
 插入链接：ctrl+k
