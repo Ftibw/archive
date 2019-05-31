@@ -1,0 +1,14 @@
+[Unit] 
+Description=dmbd4
+After=network.target
+ 
+[Service]
+User=ioas
+Group=ioas
+Type=forking
+ExecStart=/bin/sh -c "/home/ioas/dmbd4/restart.sh"
+ExecReload=/bin/kill -s HUP $MAINPID
+PrivateTmp=true
+  
+[Install]
+WantedBy=multi-user.target
