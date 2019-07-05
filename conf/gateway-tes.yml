@@ -1,0 +1,14 @@
+server.port: 8100
+
+feign:
+  hystrix:
+    enabled: true
+  client:
+    config:
+      default:  # 服务名，default表示所有服务
+        connectTimeout: 10000
+        readTimeout: 60000
+        loggerLevel: full  # full | basic | none | headers
+        #requestInterceptors: 拦截器
+
+auth-server: http://localhost:8000
